@@ -8,6 +8,10 @@ class Auth:
     passwordHash = ""
     salt = ""
     verify = ""
+    b = ""
+    B = ""
+    A = ""
+    M2 = ""
 
     # hardcoded strings
     N = int("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", 16)
@@ -30,10 +34,20 @@ class Auth:
         #self.salt = os.urandom(64)
         self.salt = s
         sha = hashlib.sha1()
-        sha.update(self.salt[::-1])
+        sha.update(self.salt[::-1]) # reverse salt
         sha.update(self.passwordHash)
         x =  int(hexlify(sha.digest()[::-1]), 16)
         self.verify = pow(self.g, x, self.N)
+
+    def calcB(self):
+        #self.b = int(hexlify(os.urandom(19)), 16)
+        self.b = int("9DF4D983AC5E403A7F9CDF40FE1C34FA2EC7AF", 16)
+        gmod = pow(self.g, self.b, self.N)
+        B = ((self.verify * 3) + gmod) % self.N
+        self.B = unhexlify("%x" % B)
+
+    def calcM2(self):
+        pass
 
 # verify codes:
 # pw hash: a34b29541b87b7e4823683ce6c7bf6ae68beaaac
