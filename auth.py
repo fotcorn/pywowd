@@ -9,7 +9,7 @@ class Auth:
     salt = ""
     verify = ""
     b = ""
-    B = ""
+    B = 0
     A = ""
     M2 = ""
 
@@ -44,7 +44,7 @@ class Auth:
         self.b = int("9DF4D983AC5E403A7F9CDF40FE1C34FA2EC7AF", 16)
         gmod = pow(self.g, self.b, self.N)
         B = ((self.verify * 3) + gmod) % self.N
-        self.B = unhexlify("%x" % B)
+        #self.B = unhexlify("%x" % B)
 
     def calcM2(self):
         pass

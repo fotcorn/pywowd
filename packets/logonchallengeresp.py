@@ -1,15 +1,24 @@
 import struct
 import binascii
 
+def long_to_bin(longint):
+    hexint = "%x" % longint
+    if len(hexint) % 2 == 1:
+        hexint = "0" + hexint
+    return binascii.unhexlify(hexint)
+
 class LogonChallengeRespPacket:
     
     structure = ""
 
     def encode(self):
-        data = struct.pack("<bbb32s", self.command, self.error, self.unknownbyte, self.srp_B)
-        data = data + struct.pack("<b" + str(len(self.srp_g)) + "s", len(self.srp_g), self.srp_g)
-        data = data + struct.pack("<b" + str(len(self.srp_N)) + "s", len(self.srp_N), self.srp_N)
-        data = data + struct.pack("<32s16sb", auth.srp_s, auth.unknown, auth.security)
+        B = long_to_bin(self.srp_B)
+        g = long_to_bin(self.srp_g)
+        N = long_to_bin(self.srp_N)
+        data = struct.pack("<bbb16s", self.command, self.error, self.unknownbyte, B)
+        data = data + struct.pack("<b" + str(len(g)) + "s", len(g), g)
+        data = data + struct.pack("<b" + str(len(N)) + "s", len(N), N)
+        data = data + struct.pack("<32s16sb", self.srp_s, self.unknown, self.security)
         return data
 
 if __name__ == '__main__':
@@ -17,10 +26,10 @@ if __name__ == '__main__':
     auth.command = 0
     auth.error = 0
     auth.unknownbyte = 0
-    auth.srp_B = binascii.unhexlify("a0715a053ec5646250e12e6aad48b747509fdb60e1e2c22fe521f63283416d20")
-    auth.srp_g = binascii.unhexlify("07")
-    auth.srp_N = binascii.unhexlify("b79b3e2a87823cab8f5ebfbf8eb10108535006298b5badbd5b53e1895e644b89")
-    auth.srp_s = binascii.unhexlify("03c6b6800cb302b90b99f91151662df11ae9182d1fa5eddfd12a6ecb4dab57b1")
+    auth.srp_B = int("a0715a053ec5646250e12e6aad48b747509fdb60e1e2c22fe521f63283416d20", 16)
+    auth.srp_g = 7
+    auth.srp_N = int("b79b3e2a87823cab8f5ebfbf8eb10108535006298b5badbd5b53e1895e644b89", 16)
+    auth.srp_s = int("03c6b6800cb302b90b99f91151662df11ae9182d1fa5eddfd12a6ecb4dab57b1", 16)
     auth.unknown = binascii.unhexlify("01e72082cebc0003eea61fc5a74c96ab")
     auth.security = 0
 
