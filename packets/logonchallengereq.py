@@ -3,8 +3,6 @@ import binascii
 
 class LogonChallengeReqPacket:
     
-    structure = ""
-
     def decode(self, data):
         packet = struct.unpack('<bbh4sbbbh4s4s4siBBBBb', data[:34]) # sbbbhss
         self.command = packet[0]

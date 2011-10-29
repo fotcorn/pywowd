@@ -31,7 +31,6 @@ auth.calcSaltVerify()
 auth.calcB()
 
 challenge_resp = LogonChallengeRespPacket()
-challenge_resp.command = 0
 challenge_resp.error = 0
 challenge_resp.unknownbyte = 0
 challenge_resp.srp_B = auth.B
