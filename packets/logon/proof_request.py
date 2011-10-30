@@ -1,12 +1,14 @@
 import struct
 import binascii
 
+from utils import bin_to_int
+
 class ProofRequest:
     def decode(self, data):
         packet = struct.unpack('<b32s20s20sbb', data)
         self.command = packet[0]
-        self.srp_A = packet[1]
-        self.srp_M1 = packet[2]
+        self.srp_A = bin_to_int(packet[1])
+        self.srp_M1 = bin_to_int(packet[2])
         self.crc = packet[3]
         self.number_of_keys = packet[4]
 

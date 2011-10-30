@@ -1,14 +1,14 @@
 import struct
 import binascii
 
-from packets.utils import long_to_bin
+from utils import int_to_bin
 
 class ChallengeResponse:
     
     def encode(self):
-        B = long_to_bin(self.srp_B)
-        g = long_to_bin(self.srp_g)
-        N = long_to_bin(self.srp_N)
+        B = int_to_bin(self.srp_B)
+        g = int_to_bin(self.srp_g)
+        N = int_to_bin(self.srp_N)
         data = struct.pack("<bbb16s", 0, self.error, self.unknownbyte, B)
         data = data + struct.pack("<b" + str(len(g)) + "s", len(g), g)
         data = data + struct.pack("<b" + str(len(N)) + "s", len(N), N)

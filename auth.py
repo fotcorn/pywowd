@@ -1,16 +1,18 @@
 import hashlib
 from binascii import hexlify, unhexlify
 
+from utils import bin_to_int, int_to_bin
+
 class Auth:
     username = ""
     password = ""
     passwordHash = ""
     salt = ""
-    verify = ""
-    b = ""
+    v = ""
+    b = 0
     B = 0
-    A = ""
-    M2 = ""
+    A = 0
+    M2 = 0
 
     # hardcoded strings
     N = int("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", 16)
@@ -35,23 +37,43 @@ class Auth:
         sha = hashlib.sha1()
         sha.update(self.salt[::-1]) # reverse salt
         sha.update(self.passwordHash)
-        x =  int(hexlify(sha.digest()[::-1]), 16)
-        self.verify = pow(self.g, x, self.N)
+        x =  bin_to_int(sha.digest()[::-1])
+        self.v = pow(self.g, x, self.N)
 
     def calcB(self):
         #self.b = int(hexlify(os.urandom(19)), 16)
         self.b = int("9DF4D983AC5E403A7F9CDF40FE1C34FA2EC7AF", 16)
         gmod = pow(self.g, self.b, self.N)
-        B = ((self.verify * 3) + gmod) % self.N
-        #self.B = unhexlify("%x" % B)
+        self.B = ((self.v * 3) + gmod) % self.N
 
     def calcM2(self):
-        pass
+        """ required vars:
+        A, B, v, N, b
+        """
+        
+        sha = hashlib.sha1()
+        sha.update(int_to_bin(self.A))
+        sha.update(int_to_bin(self.B))
+        
+        u = bin_to_int(sha.digest())
+        self.S = pow(self.A * pow(self.v, u, self.N), self.b, self.N)
+        
+        """"t = int_to_bin(self.S)
+        t1 = list()
+        for i in range(0,16):
+            t1[i] = t[i*2]"""
+        
+        
+if __name__ == '__main__':
+    auth = Auth()
+    
+    auth.calcM2()
+    
+    
+    
 
-# verify codes:
-# pw hash: a34b29541b87b7e4823683ce6c7bf6ae68beaaac
 
-#v = unhexlify("20363BAF9E0748743B43BB7E9DB34A648BFEA5BB0D25739262550C37D5C9096D")
-#v: '2699F6B83C6DFABC2E1E1DEFEF14628D16F7B3D3416D5BAA951B0C3EC3FB7970'
-# 
-#x: '0E08664C68A89E9DD2B7E17A08506F9417B01248'
+    
+    
+    
+    
