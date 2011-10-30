@@ -4,6 +4,8 @@ from binascii import hexlify
 
 from packets.logonchallengereq import LogonChallengeReqPacket
 from packets.logonchallengeresp import LogonChallengeRespPacket
+from packets.logonproofreq import LogonProofReqPacket
+from packets.logonproofresp import LogonProofRespPacket
 import auth
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,8 +20,6 @@ connection, address = s.accept()
 data = connection.recv(8096)
 challenge_req = LogonChallengeReqPacket()
 challenge_req.decode(data)
-
-print challenge_req.__dict__
 
 # challenge
 auth = auth.Auth()
@@ -40,28 +40,20 @@ challenge_resp.srp_s = auth.salt
 challenge_resp.unknown = uhex("e7f44ff2561eac9ab1bcf5a242c5c799")
 challenge_resp.security = 0
 
-
-packet = ""
-packet = packet + uhex("000000") #command, error, unknown field
-packet = packet + uhex("0" + ("%x" % auth.B))[::-1] # B
-packet = packet + uhex("01") # g length
-packet = packet + uhex("07") # g
-packet = packet + uhex("20") # N length
-packet = packet + uhex("%x" % auth.N)[::-1] # N
-packet = packet + auth.salt[::-1] # s = salt
-packet = packet + uhex("e7f44ff2561eac9ab1bcf5a242c5c799") # unknown data
-packet = packet + uhex("00") # security flags
-
-print hexlify(packet)
-print hexlify(challenge_resp.encode())
-
-#connection.sendall(packet)
+connection.sendall(challenge_resp.encode())
 
 # proof
 data = connection.recv(8096)
+proof_req = LogonProofReqPacket()
+proof_req.decode(data)
 
-auth.A = data[1:33]
+auth.srp_A = proof_req.srp_A
+auth.srp_M1 = proof_req.srp_M1
+auth.crc = proof_req.crc
+
 auth.calcM2()
+
+proof_resp = LogonProofRespPacket()
 
 
 while True:

@@ -3,7 +3,7 @@ import binascii
 
 from packets.utils import long_to_bin
 
-class LogonChallengeRespPacket:
+class ChallengeResponse:
     
     def encode(self):
         B = long_to_bin(self.srp_B)
@@ -16,7 +16,7 @@ class LogonChallengeRespPacket:
         return data
 
 if __name__ == '__main__':
-    auth = LogonChallengeRespPacket()
+    auth = ChallengeResponse()
     auth.error = 0
     auth.unknownbyte = 0
     auth.srp_B = int("a0715a053ec5646250e12e6aad48b747509fdb60e1e2c22fe521f63283416d20", 16)

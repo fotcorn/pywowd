@@ -1,7 +1,7 @@
 import struct
 import binascii
 
-class LogonChallengeReqPacket:
+class ChallengeRequest:
     
     def decode(self, data):
         packet = struct.unpack('<bbh4sbbbh4s4s4siBBBBb', data[:34]) # sbbbhss
@@ -22,7 +22,7 @@ class LogonChallengeReqPacket:
         self.srp_I = data[34:34+self.srp_I_len]
 
 if __name__ == '__main__':
-    auth = LogonChallengeReqPacket()
+    auth = ChallengeRequest()
     auth.decode(binascii.unhexlify("00082b00576f5700040100b736363878006e695700454465643c000000c0a802c80d41444d494e4953545241544f52"))
     print auth.__dict__    
 

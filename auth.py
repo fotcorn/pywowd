@@ -1,6 +1,5 @@
 import hashlib
 from binascii import hexlify, unhexlify
-import os
 
 class Auth:
     username = ""
