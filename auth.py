@@ -1,5 +1,6 @@
 import hashlib
 from binascii import hexlify, unhexlify
+from array import array
 
 from utils import bin_to_int, int_to_bin
 
@@ -37,7 +38,7 @@ class Auth:
         sha = hashlib.sha1()
         sha.update(self.salt[::-1]) # reverse salt
         sha.update(self.passwordHash)
-        x =  bin_to_int(sha.digest()[::-1])
+        x =  bin_to_int(sha.digest())
         self.v = pow(self.g, x, self.N)
 
     def calcB(self):
@@ -58,15 +59,43 @@ class Auth:
         u = bin_to_int(sha.digest())
         self.S = pow(self.A * pow(self.v, u, self.N), self.b, self.N)
         
-        """"t = int_to_bin(self.S)
+        t = int_to_bin(self.S)
         t1 = list()
-        for i in range(0,16):
-            t1[i] = t[i*2]"""
+        for i in range(0, 32, 2):
+            t1.append(t[i])
+        sha = hashlib.sha1()
+        sha.update("".join(t1))
+        
+        vK = list(range(0, 40))
+        
+        # fill even vK entries [0], [2] etc.
+        for i in range(0, 20):
+            vK[i * 2] = sha.digest()[i]
+            
+        for i in range(0, 16):
+            t1[i] = t[i * 2 + 1]
+            
+        sha = hashlib.sha1()
+        sha.update("".join(t1))
+        
+        # fill uneven vK entries [1], [3] etc.
+        for i in range(0, 20):
+            vK[i * 2 + 1] = sha.digest()[i]
+            
+        self.K = bin_to_int("".join(vK))
         
         
 if __name__ == '__main__':
     auth = Auth()
-    
+    auth.A = 24779537834766383871214540965001215337618873747719797021586341433605544731098
+    auth.B = 2146249751990846237136872953097364232791029963182059033260768982129155978064
+    auth.v = 17459918643670693210059420188370715679876585876282611281718504289092941609328
+    auth.N = 62100066509156017342069496140902949863249758336000796928566441170293728648119
+    auth.b = 4986098028789571681429462890631912138628338413
+    auth.S = 17404654784987397806592032109432532876380840791280898918494624623508978163564
+    auth.u = 862624513077399486704246227707261192820797605390
+    print 2051161536323763389469718636662950484271732485395432921929426897505559589786376043042194574095218
+
     auth.calcM2()
     
     
