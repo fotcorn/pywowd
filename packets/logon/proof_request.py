@@ -9,9 +9,13 @@ class ProofRequest:
         self.command = packet[0]
         self.srp_A = bin_to_int(packet[1])
         self.srp_M1 = bin_to_int(packet[2])
+        
+        #self.srp_A = int(binascii.hexlify(packet[1]), 16)
+        #self.srp_M1 = int(binascii.hexlify(packet[2]), 16)
+        
+        
         self.crc = packet[3]
         self.number_of_keys = packet[4]
-
 
 if __name__ == '__main__':
     proof = ProofRequest()
