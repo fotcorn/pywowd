@@ -18,7 +18,7 @@ connection, address = s.accept()
 
 
 # auth
-data = connection.recv(8096)
+data = connection.recv(4096)
 challenge_req = ChallengeRequest()
 challenge_req.decode(data)
 
@@ -44,7 +44,8 @@ challenge_resp.security = 0
 connection.sendall(challenge_resp.encode())
 
 # proof
-data = connection.recv(8096)
+data = connection.recv(4096)
+
 proof_req = ProofRequest()
 proof_req.decode(data)
 
@@ -55,7 +56,7 @@ auth.crc = proof_req.crc
 auth.calcM2()
 
 proof_resp = ProofResponse()
-proof_resp.srp_M2 = auth.srp_M2
+proof_resp.srp_M2 = auth.M2
 
 connection.sendall(proof_resp.encode())
 

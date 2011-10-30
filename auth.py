@@ -29,12 +29,11 @@ class Auth:
         sha.update(":")
         sha.update(self.password)
         self.passwordHash = sha.digest()
-        print "pwhash: " + sha.hexdigest()
 
     def calcSaltVerify(self):
         s = unhexlify('B157AB4DCB6E2AD1DFEDA51F2D18E91AF12D665111F9990BB902B30C80B6C603')
         #self.salt = os.urandom(64)
-        self.salt = s
+        self.s = s
         sha = hashlib.sha1()
         sha.update(self.salt[::-1]) # reverse salt
         sha.update(self.passwordHash)
@@ -48,10 +47,6 @@ class Auth:
         self.B = ((self.v * 3) + gmod) % self.N
 
     def calcM2(self):
-        """ required vars:
-        A, B, v, N, b
-        """
-        
         sha = hashlib.sha1()
         sha.update(int_to_bin(self.A))
         sha.update(int_to_bin(self.B))
@@ -84,17 +79,56 @@ class Auth:
             
         self.K = bin_to_int("".join(vK))
         
+        sha = hashlib.sha1()
+        sha.update(int_to_bin(self.N))
+        N_sha = sha.digest()
+        sha = hashlib.sha1()
+        sha.update(int_to_bin(self.g))
+        g_sha = sha.digest()
+        
+        hash = list()
+        for i in range(0, 20):
+            hash.append(int_to_bin(bin_to_int(N_sha[i]) ^ bin_to_int(g_sha[i])))
+            
+        t3 = "".join(hash)
+        
+        sha = hashlib.sha1()
+        sha.update(self.username)
+        t4 = sha.digest()
+        
+        # calculated M1
+        sha = hashlib.sha1()
+        sha.update(t3)
+        sha.update(t4)
+        sha.update(self.s)
+        sha.update(int_to_bin(self.A))
+        sha.update(int_to_bin(self.B))
+        sha.update(int_to_bin(self.K))
+        M = sha.digest()
+        
+        if M == self.M1:
+            print "Password correct"
+        
+        # calculate M2
+        sha = hashlib.sha1()
+        sha.update(int_to_bin(self.A))
+        sha.update(M)
+        sha.update(int_to_bin(self.K))
+        self.M2 = sha.digest()
+        
         
 if __name__ == '__main__':
     auth = Auth()
-    auth.A = 24779537834766383871214540965001215337618873747719797021586341433605544731098
-    auth.B = 2146249751990846237136872953097364232791029963182059033260768982129155978064
+    auth.username = "ADMINISTRATOR"
+    auth.A = 32392226636057736569178298570200726764378903089572035718146014074628746469686
+    auth.B = 39477995497094999596777037250542921589225449793199811220997955316523550273175
     auth.v = 17459918643670693210059420188370715679876585876282611281718504289092941609328
     auth.N = 62100066509156017342069496140902949863249758336000796928566441170293728648119
-    auth.b = 4986098028789571681429462890631912138628338413
-    auth.S = 17404654784987397806592032109432532876380840791280898918494624623508978163564
-    auth.u = 862624513077399486704246227707261192820797605390
-    print 2051161536323763389469718636662950484271732485395432921929426897505559589786376043042194574095218
+    auth.b = 5294621419232486107292813785331503792670248187
+    auth.S = 9730816514788708246368885035945444809585353141117486926833255596885657893262
+    auth.u = 1338803149889234015817804178382685056276146714235
+    auth.s = int_to_bin(80214272189838780128605308367486581597145816548177813688284808124909330286083)
+    
 
     auth.calcM2()
     

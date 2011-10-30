@@ -3,7 +3,7 @@ import binascii
 
 class ProofResponse:
     def encode(self):
-        data = struct.pack('<bb20s10s', 1, self.error, self.srp_M2, binascii.unhexlify("00008000000000000000")) # unknown data
+        data = struct.pack('<bb20s10s', 1, 0, self.srp_M2, binascii.unhexlify("00008000000000000000")) # unknown data
         return data
     
     

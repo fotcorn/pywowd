@@ -9,7 +9,7 @@ class ChallengeResponse:
         B = int_to_bin(self.srp_B)
         g = int_to_bin(self.srp_g)
         N = int_to_bin(self.srp_N)
-        data = struct.pack("<bbb16s", 0, self.error, self.unknownbyte, B)
+        data = struct.pack("<bbb32s", 0, self.error, self.unknownbyte, B)
         data = data + struct.pack("<b" + str(len(g)) + "s", len(g), g)
         data = data + struct.pack("<b" + str(len(N)) + "s", len(N), N)
         data = data + struct.pack("<32s16sb", self.srp_s, self.unknown, self.security)
