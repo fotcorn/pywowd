@@ -1,7 +1,7 @@
 import struct
 import binascii
 
-from utils import int_to_bin
+from pywowd.utils import int_to_bin
 
 class ChallengeResponse:
     

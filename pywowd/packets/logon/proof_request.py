@@ -1,7 +1,7 @@
 import struct
 import binascii
 
-from utils import bin_to_int
+from pywowd.utils import bin_to_int
 
 class ProofRequest:
     def decode(self, data):

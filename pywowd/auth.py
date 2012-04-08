@@ -1,7 +1,6 @@
 import hashlib
-from binascii import unhexlify
 
-from utils import bin_to_int, int_to_bin
+from pywowd.utils import bin_to_int, int_to_bin
 import binascii
 
 class Auth:
@@ -134,12 +133,4 @@ if __name__ == '__main__':
     
 
     auth.calcM2()
-    
-    
-    
-
-
-    
-    
-    
     

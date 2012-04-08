@@ -1,14 +1,13 @@
 import socket
-from binascii import unhexlify as uhex
+from binascii import hexlify, unhexlify
 import threading
 
-from packets.logon.challenge_request import ChallengeRequest
-from packets.logon.challenge_response import ChallengeResponse
-from packets.logon.proof_request import ProofRequest
-from packets.logon.proof_response import ProofResponse
-from packets.logon.realmlist_response import RealmlistResponse
-
-from auth import Auth
+from pywowd.packets.logon.challenge_request import ChallengeRequest
+from pywowd.packets.logon.challenge_response import ChallengeResponse
+from pywowd.packets.logon.proof_request import ProofRequest
+from pywowd.packets.logon.proof_response import ProofResponse
+from pywowd.packets.logon.realmlist_response import RealmlistResponse
+from pywowd.auth import Auth
 
 class RealmDaemonThread(threading.Thread):
     
@@ -34,7 +33,7 @@ class RealmDaemonThread(threading.Thread):
         challenge_resp.srp_g = 7
         challenge_resp.srp_N = auth.N
         challenge_resp.srp_s = auth.s
-        challenge_resp.unknown = uhex("e7f44ff2561eac9ab1bcf5a242c5c799")
+        challenge_resp.unknown = unhexlify("e7f44ff2561eac9ab1bcf5a242c5c799")
         challenge_resp.security = 0
         
         self.connection.sendall(challenge_resp.encode())
@@ -58,10 +57,8 @@ class RealmDaemonThread(threading.Thread):
         realmlist_respone = RealmlistResponse()
         
         while True:
-            data = self.connection.recv(4096)
+            self.connection.recv(4096)
             self.connection.sendall(realmlist_respone.encode())
-
-
 
 if __name__ == '__main__':
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -73,8 +70,6 @@ if __name__ == '__main__':
         connection, address = s.accept()
         thread = RealmDaemonThread()
         thread.connection = connection
+        thread.daemon = True
         thread.start()
-        
     
-    
-
