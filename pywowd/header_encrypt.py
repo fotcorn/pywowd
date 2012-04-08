@@ -2,21 +2,36 @@ import hmac
 from hashlib import sha1
 from binascii import unhexlify, hexlify
 
-from pywowd.utils import rc4crypt
 
-session_key = unhexlify('09AC58CDDC4637EF4F9B6711779178ED3960F1E839BCC9FDFC4B65D68A50B429BDB8D2CBE3FF1340')
+from M2Crypto.RC4 import RC4
 
 SERVER_ENCRYPT_KEY = unhexlify('CC98AE04E897EACA12DDC09342915357')
-SERVER_DECRYPT_KEY = 0xC2B3723CC6AED9B5343C53EE2F4367CE
+SERVER_DECRYPT_KEY = unhexlify('C2B3723CC6AED9B5343C53EE2F4367CE')
 
 
+class HeaderCrypt(object):
+    
+    def __init__(self, session_key):
+        hash = hmac.new(key=SERVER_ENCRYPT_KEY, msg=session_key[::-1], digestmod=sha1)
+        self.encrypter = RC4()
+        self.encrypter.set_key(hash.digest())
+        self.encrypter.update('\0' * 1024)
+        
+        hash = hmac.new(key=SERVER_DECRYPT_KEY, msg=session_key[::-1], digestmod=sha1)
+        self.decrypter = RC4()
+        self.decrypter.set_key(hash.digest())
+        self.decrypter.update('\0' * 1024)
 
+    def encrypt(self, data):
+        return self.encrypter.update(data)
+    
+    def decrypt(self, data):
+        return self.decrypter.update(data)
 
-
-hash = hmac.new(key=SERVER_ENCRYPT_KEY, msg=session_key[::-1], digestmod=sha1)
-encrypt_hash = hash.digest()
-
-
+"""
+encrypter = RC4()
+encrypter.set_key(hash.digest())
+encrypter.update('\0' * 1024)
 
 header1_enc = '119a870a'
 # length: 13 -> 000D
@@ -27,12 +42,13 @@ header3 = 0xe493456c
 
 
 
-data = rc4crypt('\0' * 1024 + header2_dec, encrypt_hash)
-print hexlify(data[1024:])
+print hexlify(encrypter.update(header2_dec))
 print header1_enc
 
 
 
+data = rc4crypt('\0' * 1024 + header2_dec, encrypt_hash)
+print hexlify(data[1024:])
+print header1_enc
 
-# length: 13
-# type: 0x1ee
+"""

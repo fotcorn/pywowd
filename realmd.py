@@ -49,6 +49,10 @@ class RealmDaemonThread(threading.Thread):
         
         auth.calcM2()
         
+        f = open('sessionid.txt', 'w')
+        f.write(hex(auth.K)[2:-1])
+        f.close()
+        
         proof_resp = ProofResponse()
         proof_resp.srp_M2 = auth.M2
         
