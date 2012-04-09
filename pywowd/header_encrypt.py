@@ -29,29 +29,3 @@ class HeaderCrypt(object):
 
     def encrypt(self, data):
         return self.encrypter.update(data)
-
-
-"""
-encrypter = RC4()
-encrypter.set_key(hash.digest())
-encrypter.update('\0' * 1024)
-
-header1_enc = '119a870a'
-# length: 13 -> 000D
-# opcode: 1EE -> 01EE
-header2_dec = unhexlify('000DEE01')
-header2 = 0x02e84118
-header3 = 0xe493456c
-
-
-
-print hexlify(encrypter.update(header2_dec))
-print header1_enc
-
-
-
-data = rc4crypt('\0' * 1024 + header2_dec, encrypt_hash)
-print hexlify(data[1024:])
-print header1_enc
-
-"""
