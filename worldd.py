@@ -27,7 +27,7 @@ class WorldSocket(SocketServer.BaseRequestHandler):
             self.data_recived(data)
     
     def send(self, opcode, payload, encrypt=True):
-        print "Sending Packet with OpCode %s and length %s" % (opcode, len(payload) + 2)
+        print "Sending Packet with OpCode %x and length %s" % (opcode, len(payload) + 2)
         header = struct.pack('>H', len(payload) + 2)
         header += struct.pack('<H', opcode)
         
@@ -49,13 +49,12 @@ class WorldSocket(SocketServer.BaseRequestHandler):
         else:
             header = self.crypt.decrypt_header(data[:6])
         
-        
         if header[1] in handlers:
             handler = handlers[header[1]]
-            print "Handling Packet with OpCode %s and length %s by %s.%s" % (header[1], header[0], handler.__module__, handler.__name__)
+            print "Handling Packet with OpCode %x and length %s by %s.%s" % (header[1], header[0], handler.__module__, handler.__name__)
             handler(self, data[6:])
         else:
-            print "Unknown Packet with OpCode %s and length %s" % (header[1], header[0])
+            print "Unknown Packet with OpCode %x and length %s" % (header[1], header[0])
 
 
 SocketServer.TCPServer.allow_reuse_address = True

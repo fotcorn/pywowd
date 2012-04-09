@@ -1,5 +1,6 @@
 from pywowd import opcodes
 from binascii import unhexlify
+import struct
 
 def handle_auth_session(world, data):
     world.send(opcodes.SMSG_AUTH_RESPONSE, unhexlify('0c00000000000000000000'))
@@ -11,7 +12,150 @@ def handle_account_data_times(world, data):
     world.send(opcodes.SMSG_ACCOUNT_DATA_TIMES, unhexlify('6989814f0115000000000000000000000000000000'))
 
 def handle_char_enum(world, data):
-    world.send(opcodes.SMSG_CHAR_ENUM, unhexlify('00'))
-
+    world.send(opcodes.SMSG_CHAR_ENUM, unhexlify('010100000000000000466f74636f726e00080100000201050101000000000100000000801ac400d884c500001c42000000000000000200000000010000000000000000000000000000000000000000000000000000000000000000000000000000000b2700000400000000000000000000000000000000000000000000042700000700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000295100001900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'))
+    
 def handle_realm_split(world, data):
     world.send(opcodes.SMSG_REALM_SPLIT, unhexlify('ffffffff0000000030312f30312f303100'))
+
+def handle_player_login(world, data):
+    world.send(opcodes.SMSG_LOGIN_VERIFY_WORLD, unhexlify('0100000000801AC400D884C5C8181B4200000000'))
+    world.send(opcodes.SMSG_COMPRESSED_UPDATE_OBJECT, unhexlify('6103000078018D523D4B0341109DBDDCC5A0110D188D89600A2B13D44A0BC1EC5978B1110BFB345A460CF8032E22A4B04927F809D606B4893642C00F6C442B09A43092C6C642504BF5CD658F7C40C081B76F666EDEEEECDC1A44A465354BF4D3860E376522C1B93A591EF0FB100776426075A165F576CD14F46C8E66C7715B35C3C831B4ACB75D4B5EA7BEAE35D63868D56A595F9326EA54FB9CB5AE198B70D0AAE15E3D42E8997A1D3D3FE23676F886CADBB7F7A1C8BC4A83A292A80AE465666417DC88AB7D8BF2FA2B292751351E243B10A452F9853E040E5FF292AEFAC657655B5093DF4325F2BBA94E7C99AE14D33CE07F5AB466AB2B37097ED8974EC2E63501F0C579D03C109F20B1006F15607EC381EC73CD26E0EC88E5A9AB01DFE9C11C5129716710312AC582AC141F24EF17826610E037D10F0481096000800546B1F402EB95697991DE97AC214D18384FE387C40F837FB0068659EEA35183B4D40DAD3C046114A07D8A3B6CD08CE294E234382EE2E244C505C5678A67B1077F3F04F33E478A8F159F2BE65E92AF7BF2F3EA5BC6723D662C1731576ADDA6EA11843B74C02F6C197A9E833B179E11CF9FFBFF0395535F5F'))
+    
+def handle_ping(world, data):
+    world.send(opcodes.SMSG_PONG, data[:4])
+    
+    """
+    
+    tcp.flags.push == 1
+    
+    
+    
+    WorldPacket data( SMSG_LOGIN_VERIFY_WORLD, 20 );
+    data << pCurrChar->GetMapId();
+    data << pCurrChar->GetPositionX();
+    data << pCurrChar->GetPositionY();
+    data << pCurrChar->GetPositionZ();
+    data << pCurrChar->GetOrientation();
+    SendPacket(&data);
+    
+    
+    
+    OPCODE: SMSG_COMPRESSED_UPDATE_OBJECT (0x01F6)
+DATA:
+61 03 00 00 78 01 8D 52 3D 4B 03 41 10 9D BD DC 
+C5 A0 11 0D 18 8D 89 60 0A 2B 13 D4 4A 0B C1 EC 
+59 78 B1 11 0B FB 34 5A 46 0C F8 03 2E 22 A4 B0 
+49 27 F8 09 D6 06 B4 89 36 42 C0 0F 6C 44 2B 09 
+A4 30 92 C6 C6 42 50 4B F5 CD 65 8F 7C 40 C0 81 
+B7 6F 66 6E DE EE EC DC 1A 44 A4 65 35 4B F4 D3 
+86 0E 37 65 22 C1 B9 3A 59 1E F0 FB 10 07 76 42 
+60 75 A1 65 F5 76 CD 14 F4 6C 8E 66 C7 71 5B 35 
+C3 C8 31 B4 AC B7 5D 4B 5E A7 BE AE 35 D6 38 68 
+D5 6A 59 5F 93 26 EA 54 FB 9C B5 AE 19 8B 70 D0 
+AA E1 5E 3D 42 E8 99 7A 1D 3D 3F E2 36 76 F8 86 
+CA DB B7 F7 A1 C8 BC 4A 83 A2 92 A8 0A E4 65 66 
+64 17 DC 88 AB 7D 8B F2 FA 2B 29 27 51 35 1E 24 
+3B 10 A4 52 F9 85 3E 04 0E 5F F2 92 AE FA C6 57 
+65 5B 50 93 DF 43 25 F2 BB A9 4E 7C 99 AE 14 D3 
+3C E0 7F 5A B4 66 AB 2B 37 09 7E D8 97 4E C2 E6 
+35 01 F0 C5 79 D0 3C 10 9F 20 B1 00 6F 15 60 7E 
+C3 81 EC 73 CD 26 E0 EC 88 E5 A9 AB 01 DF E9 C1 
+1C 51 29 71 67 10 31 2A C5 82 AC 14 1F 24 EF 17 
+82 66 10 E0 37 D1 0F 04 81 09 60 00 80 05 46 B1 
+F4 02 EB 95 69 79 91 DE 97 AC 21 4D 18 38 4F E3 
+87 C4 0F 83 7F B0 06 86 59 EE A3 51 83 B4 D4 0D 
+AD 3C 04 61 14 A0 7D 8A 3B 6C D0 8C E2 94 E2 34 
+38 2E E2 E2 44 C5 05 C5 67 8A 67 B1 07 7F 3F 04 
+F3 3E 47 8A 8F 15 9F 2B E6 5E 92 AF 7B F2 F3 EA 
+5B C6 72 3D 66 2C 17 31 57 6A DD A6 EA 11 84 3B 
+74 C0 2F 6C 19 7A 9E 83 3B 17 9E 11 CF 9F FB FF 
+03 95 53 5F 5F 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    CMSG_PLAYER_LOGIN
+    
+    SMSG_POWER_UPDATE
+    SMSG_AURA_UPDATE
+    SMSG_SET_PROFICIENCY 
+    SMSG_AURA_UPDATE
+    MSG_SET_DUNGEON_DIFFICULTY
+    SMSG_LOGIN_VERIFY_WORLD
+    SMSG_COMPRESSED_UPDATE_OBJECT
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 2);         // added in 2.2.0
+    data << uint8(2);                                       // unknown value
+    data << uint8(0);                                       // enable(1)/disable(0) voice chat interface in client
+    SendPacket(&data);
+    
+    data.Initialize(SMSG_MOTD, 50);                     // new in 2.0.1
+    data << (uint32)0;
+    uint32 linecount=0;
+    std::string str_motd = sWorld.GetMotd();
+    std::string::size_type pos, nextpos;
+    pos = 0;
+    while ( (nextpos= str_motd.find('@',pos)) != std::string::npos )
+    {
+        if (nextpos != pos)
+        {
+            data << str_motd.substr(pos, nextpos-pos);
+            ++linecount;
+        }
+        pos = nextpos + 1;
+    }
+    if (pos < str_motd.length())
+    {
+        data << str_motd.substr(pos);
+        ++linecount;
+    }
+    data.put(0, linecount);
+    SendPacket( &data );
+    
+    data.Initialize(SMSG_LEARNED_DANCE_MOVES, 4+4);
+    data << uint32(0);
+    data << uint32(0);
+    SendPacket(&data);
+    
+    pCurrChar->SendInitialPacketsBeforeAddToMap();
+    
+    pCurrChar->TeleportTo(at->target_mapId, at->target_X, at->target_Y, at->target_Z, pCurrChar->GetOrientation());
+    
+    
+    # we are in world
+    
+    
+    
+    
+    pCurrChar->SendInitialPacketsAfterAddToMap();
+     
+     
+     
+    
+    """
+
+"""
+Unknown Packet with OpCode 3d and length 12            CMSG_PLAYER_LOGIN
+Unknown Packet with OpCode 1dc and length 12           CMSG_PING
+Unknown Packet with OpCode 3d3 and length 9            CMSG_SET_ACTIVE_VOICE_CHANNEL
+"""
