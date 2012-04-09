@@ -50,15 +50,12 @@ class RealmDaemonThread(threading.Thread):
         auth.calcM2()
         
         f = open('sessionid.txt', 'w')
-        f.write(hex(auth.K)[2:-1])
+        K = '%X' % auth.K
+        if len(K) % 2 == 1:
+            K = '0' + K
+        f.write(K)
         f.close()
-        
-        """
-        f = open('sessionid.txt', 'w')
-        f.write(int_to_bin(auth.K))
-        f.close()
-        """
-        
+                
         proof_resp = ProofResponse()
         proof_resp.srp_M2 = auth.M2
         

@@ -17,11 +17,7 @@ class AuthChallenge(object):
     seed = seed1 = seed2 = None
     
     def encode(self):
-        size = 42
-        op_code = SMSG_AUTH_CHALLENGE
-        
-        data = struct.pack('>H', size)
-        data += struct.pack('<HI', op_code, 1)
+        data = struct.pack('<I', 1)
         data += int_to_bin(self.seed)
         data += int_to_bin(self.seed1)
         data += int_to_bin(self.seed2)

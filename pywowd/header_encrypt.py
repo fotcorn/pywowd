@@ -1,8 +1,7 @@
 import hmac
+import struct
 from hashlib import sha1
-from binascii import unhexlify, hexlify
-
-
+from binascii import unhexlify
 from M2Crypto.RC4 import RC4
 
 SERVER_ENCRYPT_KEY = unhexlify('CC98AE04E897EACA12DDC09342915357')
@@ -22,11 +21,15 @@ class HeaderCrypt(object):
         self.decrypter.set_key(hash.digest())
         self.decrypter.update('\0' * 1024)
 
+    def decrypt_header(self, header):
+        decrypted_header = self.decrypter.update(header)
+        size = struct.unpack('>H', decrypted_header[:2])[0]
+        opcode = struct.unpack('<I', decrypted_header[2:6])[0]
+        return (size, opcode)
+
     def encrypt(self, data):
         return self.encrypter.update(data)
-    
-    def decrypt(self, data):
-        return self.decrypter.update(data)
+
 
 """
 encrypter = RC4()
