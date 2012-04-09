@@ -7,7 +7,7 @@ from pywowd.packets.world.auth_challenge import AuthChallenge
 from pywowd.header_encrypt import HeaderCrypt
 from pywowd import opcodes
 
-
+# tcp.flags.push == 1
 
 
 class WorldSocket(SocketServer.BaseRequestHandler):
@@ -48,13 +48,31 @@ class WorldSocket(SocketServer.BaseRequestHandler):
         packet = create_packet(34, opcodes.SMSG_TUTORIAL_FLAGS, unhexlify('0000000000000000000000000000000000000000000000000000000000000000'))
         self.request.sendall(packet)
         
+        # CMSG_READY_FOR_ACCOUNT_DATA_TIMES
+        header = self.request.recv(4096)[:6]
+        print hexlify(crypt.decrypt(header))
+
+        packet = create_packet(23, opcodes.SMSG_ACCOUNT_DATA_TIMES, unhexlify('6989814f0115000000000000000000000000000000'))
+        self.request.sendall(packet)
         
-        data =  self.request.recv(4096)
-        print hexlify(data)
+        # CMSG_CHAR_ENUM
+        header = self.request.recv(4096)[:6]
+        print hexlify(crypt.decrypt(header))
+        
+        # CMSG_REALM_SPLIT
+        header = self.request.recv(4096)[:6]
+        print hexlify(crypt.decrypt(header))
+        
+        # SMSG_CHAR_ENUM
+        packet = create_packet(3, opcodes.SMSG_CHAR_ENUM, unhexlify('00'))
+        self.request.sendall(packet)
+        
+        # SMSG_REALM_SPLIT
+        packet = create_packet(19, opcodes.SMSG_REALM_SPLIT, unhexlify('ffffffff0000000030312f30312f303100'))
+        self.request.sendall(packet)
         
         while True:
             pass
-
 
 server = SocketServer.TCPServer(('localhost', 8085), WorldSocket)
 server.serve_forever()
