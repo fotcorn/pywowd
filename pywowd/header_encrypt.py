@@ -2,7 +2,8 @@ import hmac
 import struct
 from hashlib import sha1
 from binascii import unhexlify
-from M2Crypto.RC4 import RC4
+
+from pywowd.rc4 import RC4
 
 SERVER_ENCRYPT_KEY = unhexlify('CC98AE04E897EACA12DDC09342915357')
 SERVER_DECRYPT_KEY = unhexlify('C2B3723CC6AED9B5343C53EE2F4367CE')
