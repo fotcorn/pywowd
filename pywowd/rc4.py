@@ -19,3 +19,4 @@ class RC4():
             r = self.s[(self.s[self.i] + self.s[self.j]) % 256]
             encrypted.append(chr(r ^ ord(c)))
         return ''.join(encrypted)
+
