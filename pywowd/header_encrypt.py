@@ -1,12 +1,18 @@
 import hmac
 import struct
 from hashlib import sha1
-from binascii import unhexlify
+from binascii import unhexlify, hexlify
 
 from pywowd.rc4 import RC4
 
-SERVER_ENCRYPT_KEY = unhexlify('CC98AE04E897EACA12DDC09342915357')
-SERVER_DECRYPT_KEY = unhexlify('C2B3723CC6AED9B5343C53EE2F4367CE')
+#SERVER_ENCRYPT_KEY = unhexlify('CC98AE04E897EACA12DDC09342915357')
+#SERVER_DECRYPT_KEY = unhexlify('C2B3723CC6AED9B5343C53EE2F4367CE')
+
+#SERVER_ENCRYPT_KEY = unhexlify('08F1959F47E5D2DBA13D778F3F3EE700')
+#SERVER_DECRYPT_KEY = unhexlify('40AAD392267143473A3108A6E7DC982A')
+
+SERVER_DECRYPT_KEY = unhexlify('08F1959F47E5D2DBA13D778F3F3EE700')
+SERVER_ENCRYPT_KEY = unhexlify('40AAD392267143473A3108A6E7DC982A')
 
 
 class HeaderCrypt(object):
@@ -24,6 +30,7 @@ class HeaderCrypt(object):
 
     def decrypt_header(self, header):
         decrypted_header = self.decrypter.update(header)
+        print hexlify(decrypted_header)
         size = struct.unpack('>H', decrypted_header[:2])[0]
         opcode = struct.unpack('<I', decrypted_header[2:6])[0]
         return (size, opcode)
