@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 /*
 * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
@@ -18,10 +17,8 @@
 * Foundation Inc. 59 Temple Place Suite 330 Boston MA  02111-1307  USA
 */
 """
-SMSG_AUTH_CHALLENGE = 0xF94
-CMSG_AUTH_SESSION = 0x737
 
-"""
+
 MSG_NULL_ACTION                                 = 0x000
 CMSG_BOOTME                                     = 0x001
 CMSG_DBLOOKUP                                   = 0x002
@@ -1333,5 +1330,3 @@ CMSG_COMMENTATOR_SKIRMISH_QUEUE_COMMAND         = 0x51B
 SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT1         = 0x51C
 SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT2         = 0x51D
 SMSG_COMPRESSED_UNKNOWN_1310                    = 0x51E
-"""
-
