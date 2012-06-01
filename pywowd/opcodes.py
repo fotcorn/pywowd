@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 /*
 * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>

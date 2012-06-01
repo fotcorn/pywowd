@@ -28,7 +28,7 @@ class WorldSocket(SocketServer.BaseRequestHandler):
     
     def send(self, opcode, payload, encrypt=True):
         print " - Sending Packet with OpCode %x and length %s:" % (opcode, len(payload) + 2)
-        header = struct.pack('<HH', len(payload) + 2, opcode)
+        header = struct.pack('<HI', len(payload) + 4, opcode)
                 
         if encrypt == True:
             header = self.crypt.encrypt(header)
@@ -49,7 +49,18 @@ class WorldSocket(SocketServer.BaseRequestHandler):
         
     def data_recived(self, data):
         if 'WORLD OF WARCRAFT CONNECTION' in data:
-            self.send(opcodes.SMSG_AUTH_CHALLENGE, unhexlify('00003df4bc46b26ca07f311a5fa5b8fc3a043ed8ad088b7ff72ec6deb0c233de658f012dd109bf'), False)
+            self.send(opcodes.SMSG_AUTH_CHALLENGE, unhexlify('2074a610372c0fec8a727bf3adf4211646059628fb4058388f35598c5441161401f2947eaf'), False)
+            
+            
+            """
+            3bd6a1f0b272179d4f2bed7b0b6f88cca2c98628c5558aadd7037abcdf82f821019ae28234
+            3df4bc46b26ca07f311a5fa5b8fc3a043ed8ad088b7ff72ec6deb0c233de658f012dd109bf
+            2074a610372c0fec8a727bf3adf4211646059628fb4058388f35598c5441161401f2947eaf
+            
+            """
+            
+            
+            
             return
         
         if struct.unpack('<I', data[2:6])[0] == opcodes.CMSG_AUTH_SESSION:
